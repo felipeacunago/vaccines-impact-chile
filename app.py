@@ -209,7 +209,7 @@ app.layout = html.Div(
                     id="uci-dist-container",
                     className="six columns",
                     children=[
-                        build_graph_title("Distribución edad de contagios (% del grupo etario con respecto al total UCI)"),
+                        build_graph_title("Distribución edad de pacientes UCI (% del grupo etario con respecto al total UCI)"),
                         GraphWithSlider(preffix='uci-dist-edad', data=df_uci, xaxis_field='date')
                     ],
                 ),
@@ -474,7 +474,7 @@ def update_uci_dist(
         dict(
             type="scatter",
             x=aux.date,
-            y=aux['Menores de 60']/df_uci['Totales']*100,
+            y=aux['Menores de 60']/aux['Totales']*100,
             name="Menores de 60",
             mode="lines",
             hoverinfo="x+y+name",
