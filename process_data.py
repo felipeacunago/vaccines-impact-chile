@@ -69,33 +69,27 @@ df_casos = pd.read_csv(src_path)
 
 df_casos['Etapa clinica'] = df_casos['Etapa clinica'].fillna('Ninguna')
 df_casos = df_casos[df_casos['Etapa clinica']=='Ninguna'].groupby('Grupo de edad').sum().transpose()
+df_casos.drop(df_casos.tail(1).index, inplace=True)
 
+df_casos_fixed = pd.DataFrame(index=pd.date_range(df_casos.index.min(),df_casos.index.max(), freq="D"))
+df_casos_fixed = df_casos_fixed.join(df_casos, how='left')
+df_casos_fixed = df_casos_fixed.interpolate()
+df_casos_fixed = df_casos_fixed.astype(int)
 
-df_casos_diarios = df_casos.diff(1)
+df_casos_diarios = df_casos_fixed.diff(1)
 
-
-df_casos_diarios.drop(df_casos_diarios.tail(1).index, inplace=True)
-
+df_casos_diarios.drop(df_casos_diarios.head(1).index, inplace=True)
 
 over_60_cols = set(['60 - 64 años','65 - 69 años','70 - 74 años','75 - 79 años','80 y más años'])
 under_60_cols = set(df_casos_diarios.columns).difference(over_60_cols)
 
-
 df_casos_diarios['60 o mas'] = df_casos_diarios[over_60_cols].sum(axis=1)
 df_casos_diarios['Menores de 60'] = df_casos_diarios[under_60_cols].sum(axis=1)
 
-
-
 df_casos_diarios = df_casos_diarios.reset_index().rename(columns={'index':'date'})
-
-
-
-df_casos_diarios
-
 
 df_casos_diarios['Totales'] = df_casos_diarios[['60 o mas','Menores de 60']].sum(axis=1)
 df_casos_diarios = df_casos_diarios[['date','60 o mas','Menores de 60','Totales']]
-
 
 df_casos_diarios.to_csv(f'{destination_folder}/casos_diarios.csv')
 
