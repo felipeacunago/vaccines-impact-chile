@@ -62,6 +62,13 @@
     color: white;
 }
 
+.graph-container > .graph-title {
+    font-family: 'Open Sans', sans-serif;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: white;
+}
+
 #instructions {
     font-size: 1.5rem;
     font-style: italic;
@@ -205,7 +212,6 @@
     }
 }
 
-
 /* Top-row-graphs
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 #top-row-graphs {
@@ -220,9 +226,12 @@
     flex-grow: 1;
 }
 
+.graph-container {
+    flex-grow: 1;
+}
+
 #ternary-map-container {
     flex-grow: 1;
-    padding-left: 100px;
 }
 
 #mapbox-view-selector, #ternary-layer-select {
@@ -251,6 +260,10 @@
     #ternary-map-container {
         margin-bottom: 5rem;
     }
+
+    .graph-container {
+        margin: 5rem 0 0 0;
+    }
 }
 
 @media (min-width: 1001px) {
@@ -260,6 +273,9 @@
 
     #ternary-header {
         margin: 0 0 0 5rem;
+    }
+    .graph-container {
+        margin: 0 -2rem 0 4rem;
     }
 }
 
@@ -281,9 +297,9 @@
 }
 
 @media (min-width: 1551px) {
-    #ternary-map * {
+    /* #ternary-map * {
         font-size: 1rem;
-    }
+    } */
 
     #top-row .legendtext {
         font-size: 1.25rem !important;
@@ -300,9 +316,9 @@
 }
 
 @media (max-width: 1550px) {
-    #ternary-map * {
+    /* #ternary-map * {
         font-size: 0.85rem;
-    }
+    } */
 
     #top-row .legendtext {
         font-size: 1.25rem !important;
@@ -319,9 +335,9 @@
 }
 
 @media (max-width: 1400px) {
-    #ternary-map * {
+    /* #ternary-map * {
         font-size: 0.9rem;
-    }
+    } */
 
     #top-row .legendtext {
         font-size: 1.25rem !important;
@@ -340,15 +356,9 @@
 @media (max-width: 1000px) {
     #top-row {
         padding: 0 4vw;
+        padding-bottom: 100px;
     }
 
-    #ternary-map {
-        margin-left: -6.5rem;
-    }
-
-    #ternary-map * {
-        font-size: 1rem;
-    }
 
     #top-row .legendtext {
         font-size: 1.25rem !important;
@@ -366,9 +376,9 @@
 @media (max-width: 750px) {
     /*For some reason, at around 700px, a font-size is set to the ternary map text, so !important tag is needed to
     override it*/
-    #ternary-map * {
+    /* #ternary-map * {
         font-size: 1.1rem !important;
-    }
+    } */
 
     #top-row .legendtext {
         font-size: 1.25rem !important;
@@ -402,15 +412,15 @@
         z-index: 3;
     }
 
-    #ternary-map {
+    /* #ternary-map {
         position: relative;
         margin: -3rem 0 0 -6.5rem;
         z-index: 1;
-    }
-
+    } */
+/* 
     #ternary-map * {
         font-size: 1.8vw !important;
-    }
+    } */
 
     #top-row .legendtext {
         font-size: 1.1rem !important;
@@ -426,9 +436,9 @@
 }
 
 @media (max-width: 400px) {
-    #ternary-map * {
+    /* #ternary-map * {
         font-size: 2vw !important;
-    }
+    } */
 
     #top-row {
         position: relative;
@@ -441,9 +451,9 @@
         margin-top: -5rem;
     }
 
-    #ternary-map {
+    /* #ternary-map {
         margin: -7rem 0 0 -6.5rem;
-    }
+    } */
 
     .hovertext text{
         font-size: 0.9rem !important;
@@ -457,9 +467,15 @@
     #bottom-row {
         margin-top: -8rem;
     }
-
+    #ternary-map {
+        height: 35rem;
+    }
+/* 
     #ternary-map {
         margin: -9rem 0 0 -6.5rem;
+    } */
+    .graph-container{
+        height: 35rem;
     }
 }
 

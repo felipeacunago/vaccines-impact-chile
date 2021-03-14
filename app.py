@@ -384,9 +384,9 @@ app.layout = html.Div(
                                 build_banner(),
                                 html.P(
                                     id="instructions",
-                                    children="Dashboard para visualizar el impacto de la vacuna sobre la pandemia"
-                                    "siguiendo la idea de <a href='https://ourworldindata.org/vaccination-israel-impact'>Ourworldindata</a>."
-                                    "Hecho por Felipe Acuña. "
+                                    children=["Dashboard para visualizar el impacto de la vacuna sobre la pandemia",
+                                    " siguiendo la idea de ",html.A(href='https://ourworldindata.org/vaccination-israel-impact', children='OurWorldInData'), ".\n"
+                                    "Hecho por Felipe Acuña. "]
                                 )
                             ],
                         )
@@ -398,7 +398,6 @@ app.layout = html.Div(
                     children=[
                         # Well map
                         html.Div(
-                            id="well-map-container",
                             children=[
                                 build_graph_title("Avance vacunación por edad"),
                                 dcc.Graph(
@@ -412,19 +411,11 @@ app.layout = html.Div(
                                     config={"scrollZoom": True, "displayModeBar": False},
                                 ),
                             ],
+                            className='graph-container'
                         ),
-                        # Ternary map
                         html.Div(
-                            id="ternary-map-container",
                             children=[
-                                html.Div(
-                                    id="ternary-header",
-                                    children=[
-                                        build_graph_title(
-                                            "Avance vacunación población"
-                                        )
-                                    ],
-                                ),
+                                build_graph_title("Avance vacunación por edad"),
                                 dcc.Graph(
                                     id="ternary-map",
                                     figure={
@@ -433,12 +424,10 @@ app.layout = html.Div(
                                             "plot_bgcolor": "#192444",
                                         }
                                     },
-                                    config={
-                                        "scrollZoom": True,
-                                        "displayModeBar": False,
-                                    },
+                                    config={"scrollZoom": True, "displayModeBar": False},
                                 ),
                             ],
+                            className='graph-container'
                         ),
                     ],
                 ),
@@ -455,7 +444,7 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Incremental de contagios entre días (no diarios)"),
-                        dcc.Graph(id="form-by-bar"),
+                        dcc.Graph(id="form-by-bar", config={"scrollZoom": True, "displayModeBar": False}),
                     ],
                 ),
                 html.Div(
@@ -464,7 +453,7 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Distribución de edad de los contagios (% del total de contagios)"),
-                        dcc.Graph(id="production-fig"),
+                        dcc.Graph(id="production-fig", config={"scrollZoom": True, "displayModeBar": False}),
                     ],
                 ),
             ],
@@ -480,7 +469,7 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Pacientes UCI por edad (diarios)"),
-                        dcc.Graph(id="uci-ages-fig"),
+                        dcc.Graph(id="uci-ages-fig", config={"scrollZoom": True, "displayModeBar": False}),
                     ],
                 ),
                 html.Div(
@@ -489,7 +478,7 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Distribución de edad de los pacientes UCI"),
-                        dcc.Graph(id="uci-dist-fig"),
+                        dcc.Graph(id="uci-dist-fig", config={"scrollZoom": True, "displayModeBar": False}),
                     ],
                 ),
             ],
@@ -600,4 +589,4 @@ def update_production(map_select, tern_select, bar_select):
 
 # Running the server
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0')
