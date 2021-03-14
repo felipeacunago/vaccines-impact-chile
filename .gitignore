@@ -1,4 +1,3 @@
-*.csv
 env/
 .ipynb_checkpoints/
 .vscode/
