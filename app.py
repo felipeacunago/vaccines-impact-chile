@@ -160,7 +160,7 @@ app.layout = html.Div(
                         ),
                         html.Div(
                             children=[
-                                build_graph_title("Avance vacunación por edad"),
+                                build_graph_title("Avance vacunación en la población total"),
                                 GraphWithSlider(preffix='vacunas-totales', data=df_vacunas, xaxis_field='datetime')
                             ],
                             className='graph-container'
@@ -211,6 +211,29 @@ app.layout = html.Div(
                     children=[
                         build_graph_title("Distribución edad de pacientes UCI (% del grupo etario con respecto al total UCI)"),
                         GraphWithSlider(preffix='uci-dist-edad', data=df_uci, xaxis_field='date')
+                    ],
+                ),
+            ],
+        ),
+        # estudio la tercera
+        html.Div(
+            className="row",
+            id="uci-base100-row",
+            children=[
+                html.Div(
+                    id="uci-base100-60-container",
+                    className="six columns",
+                    children=[
+                        build_graph_title("Pacientes UCI base 100 (con respecto a número hospitalizados de su grupo etario el 03/02/21)"),
+                        GraphWithSlider(preffix='uci-edad-base-100-60', data=df_uci, xaxis_field='date')
+                    ],
+                ),
+                html.Div(
+                    id="uci-base100-70-container",
+                    className="six columns",
+                    children=[
+                        build_graph_title("Pacientes UCI base 100 (con respecto a número hospitalizados de su grupo etario el 03/02/21)"),
+                        GraphWithSlider(preffix='uci-edad-base-100-70', data=df_uci, xaxis_field='date')
                     ],
                 ),
             ],
@@ -549,6 +572,99 @@ def update_contagios_dist(slider):
     ]
 
     return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+
+# Update base 100 , con corte en 60 años
+@app.callback(
+    [Output("uci-edad-base-100-60-graph", "figure"), Output("uci-edad-base-100-60-min-val", "children"), Output("uci-edad-base-100-60-max-val", "children")],
+    [
+        Input("uci-edad-base-100-60-slider", 'value'),
+    ]
+)
+def update_uci_base100_60(slider):
+
+    # Find which one has been triggered
+    layout = dict(
+        xaxis=dict(title="Fecha")
+    )
+
+    numdate = {el[0]:el[1] for el in enumerate(list(df_uci['date'].unique()))}
+    aux = filter_dataset(df_uci, numdate[slider[0]], numdate[slider[1]], 'date')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['Menores de 60']/df_uci[df_uci['date']=='2021-02-03']['Menores de 60'].iloc[0]*100,
+            name="Menores de 60",
+            mode="lines",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['60 o mas']/df_uci[df_uci['date']=='2021-02-03']['60 o mas'].iloc[0]*100,
+            name="60 o mas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            fill='tonexty',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+# Update base 100 , con corte en >70 años y <50
+@app.callback(
+    [Output("uci-edad-base-100-70-graph", "figure"), Output("uci-edad-base-100-70-min-val", "children"), Output("uci-edad-base-100-70-max-val", "children")],
+    [
+        Input("uci-edad-base-100-70-slider", 'value'),
+    ]
+)
+def update_uci_base100_70(slider):
+
+    # Find which one has been triggered
+    layout = dict(
+        xaxis=dict(title="Fecha")
+    )
+
+    numdate = {el[0]:el[1] for el in enumerate(list(df_uci['date'].unique()))}
+    aux = filter_dataset(df_uci, numdate[slider[0]], numdate[slider[1]], 'date')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux[['<=39','40-49']].sum(axis=1)/df_uci[df_uci['date']=='2021-02-03'][['<=39','40-49']].sum(axis=1).iloc[0]*100,
+            name="Menores de 50",
+            mode="lines",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['>=70']/df_uci[df_uci['date']=='2021-02-03']['>=70'].iloc[0]*100,
+            name="70 o mas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            fill='tonexty',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+
 
 
 # Running the server

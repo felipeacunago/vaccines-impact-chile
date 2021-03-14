@@ -455,6 +455,11 @@
     background-color: #f2f5fa;
 }
 
+#uci-base100-row {
+    padding: 5rem;
+    background-color: #f2f5fa;
+}
+
 #uci-row .graph-title {
     font-family: "Open Sans", sans-serif;
     font-weight: 800;
