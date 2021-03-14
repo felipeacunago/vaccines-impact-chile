@@ -10,6 +10,8 @@ import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from environs import Env
+from datetime import datetime as dt
+from dateutil import parser as dtparser
 
 env = Env()
 env.read_env()
@@ -66,307 +68,59 @@ def build_graph_title(title):
     return html.P(className="graph-title", children=title)
 
 
-def generate_cases_stacked(processed_data):
-    layout = dict(
-        xaxis=dict(title="Fecha"), yaxis=dict(title="Distribución edad de contagios")
-    )
+class GraphWithSlider(html.Div):
+    def __init__(self, children=None, className=None, preffix='', data=None, xaxis_field=''):
+        self.preffix = preffix
+        self.data = data
+        self.xaxis_field = xaxis_field
+        super().__init__(children=self.generate_children(), className=className)
 
-    data = [
-        dict(
-            type="scatter",
-            x=df_casos_diarios.date,
-            y=df_casos_diarios['Menores de 60']/df_casos_diarios['Totales']*100,
-            name="Menores de 60",
-            mode="lines",
-            hoverinfo="x+y+name",
-            line=dict(width=0.5, color='rgb(131, 90, 241)'),
-            stackgroup='one',
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_casos_diarios.date,
-            y=df_casos_diarios['60 o mas']/df_casos_diarios['Totales']*100,
-            name="60 o mas",
-            mode="lines",
-            hoverinfo="x+y+name",
-            stackgroup='one',
-            line=dict(width=0.5, color='rgb(111, 231, 219)'),
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-    ]
+    def generate_children(self):
 
-    return {"data": data, "layout": layout}
+        numdate = {el[0]:el[1] for el in enumerate(list(self.data[self.xaxis_field].unique()))}
+        x_min = list(numdate.keys())[0]
+        x_max = list(numdate.keys())[-1]
 
-def generate_uci_dist_fig(processed_data):
-    layout = dict(
-        xaxis=dict(title="Fecha"), yaxis=dict(title="Distribución edad de pacientes UCI")
-    )
-
-    data = [
-        dict(
-            type="scatter",
-            x=df_uci.date,
-            y=df_uci['Menores de 60']/df_uci['Totales']*100,
-            name="Menores de 60",
-            mode="lines",
-            hoverinfo="x+y+name",
-            line=dict(width=0.5, color='rgb(131, 90, 241)'),
-            stackgroup='one',
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_uci.date,
-            y=df_uci['60 o mas']/df_uci['Totales']*100,
-            name="60 o mas",
-            mode="lines",
-            hoverinfo="x+y+name",
-            stackgroup='one',
-            line=dict(width=0.5, color='rgb(111, 231, 219)'),
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-    ]
-
-    return {"data": data, "layout": layout}
-
-
-def generate_well_map(dff, selected_data):
-    dataset = df_vacunas[df_vacunas['Dosis']=='Primera']
-
-    layout = go.Layout(
-        #margin=dict(l=30, r=0, b=20, t=40),
-        showlegend=False,
-        xaxis_tickformat = '%d %B (%a)<br>%Y'
-    )
-
-    data = [
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Primera'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Primera']['Menores de 60 (%)']*100,
-            name="< 60 - 1 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Segunda']['Menores de 60 (%)']*100,
-            name="< 60 - 1 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Primera'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Primera']['60 o mas (%)']*100,
-            name=">= 60 - 1 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Segunda']['60 o mas (%)']*100,
-            name=">= 60 - 2 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
+        graph = dcc.Graph(
+                    id=f"{self.preffix}-graph",
+                    figure={
+                        "layout": {
+                            "paper_bgcolor": "#192444",
+                            "plot_bgcolor": "#192444",
+                        }
+                    },
+                    config={"scrollZoom": True, "displayModeBar": False},
+                )
+        
+        slider =  html.Div(
+            dcc.RangeSlider(
+                id=f"{self.preffix}-slider",
+                min=x_min,
+                max=x_max,
+                value=[x_min, x_max]
+            ),
+            className='two-thirds column'
         )
-    ]
 
+        selected_min = html.Div(id=f'{self.preffix}-min-val', children=dtparser.isoparse(str(numdate[x_min])).strftime("%d %B, %Y"), className='one-sixth column')
+        selected_max = html.Div(id=f'{self.preffix}-max-val', children=dtparser.isoparse(str(numdate[x_max])).strftime("%d %B, %Y"), className='one-sixth column')
 
-    return {"data": data, "layout": layout}
-
-
-def generate_vacs_total(dff, selected_data, contour_visible, marker_visible):
-
-    # Generate contour
-
-    layout = go.Layout(
-        #margin=dict(l=30, r=0, b=20, t=40),
-        showlegend=False,
-        xaxis_tickformat = '%d %B (%a)<br>%Y'
-    )
-
-    data = [
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Primera'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Primera']['Total']/tot_chilenos*100,
-            name="1 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime,
-            y=df_vacunas[df_vacunas['Dosis']=='Segunda']['Total']/tot_chilenos*100,
-            name="2 Dosis",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
+        children = html.Div(
+            [
+                html.Div(graph, className='row'),
+                html.Div([selected_min, slider,selected_max], className='slider row')
+            ], className='container'
         )
+
+        
+
+        return children
+
+def filter_dataset(dataset, min_value, max_value, filter_field):
+
+    return dataset[
+        (dataset[filter_field]>=min_value) & (dataset[filter_field]<=max_value)
     ]
-
-    return {"data": data, "layout": layout}
-
-
-def generate_contour_text(a, b, c, name, text, visible):
-    return dict(
-        type="scatterternary",
-        a=[a],
-        b=[b],
-        c=[c],
-        name=name,
-        text=text,
-        mode="text",
-        hoverinfo="none",
-        textposition="middle center",
-        textfont={"size": 11, "color": "#000000", "family": "sans-serif"},
-        showlegend=False,
-        legendgroup="Rock type",
-        visible=visible,
-    )
-
-
-def generate_formation_bar(dff, selected_data):
-
-    layout = go.Layout(
-        #margin=dict(l=30, r=0, b=20, t=40),
-        showlegend=False,
-        xaxis_tickformat = '%d %B (%a)<br>%Y'
-    )
-
-    data = [
-        dict(
-            type="scatter",
-            x=df_casos_diarios.date,
-            y=df_casos_diarios['Menores de 60'],
-            name="Menores de 60",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_casos_diarios.date,
-            y=df_casos_diarios['60 o mas'],
-            name="60 o más",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        )
-    ]
-
-    return {"data": data, "layout": layout}
-
-
-# Helper for extracting select index from mapbox and tern selectData
-def get_selection(data, formation, selection_data, starting_index):
-    ind = []
-    current_curve = data["fm_name"].unique().tolist().index(formation)
-    for point in selection_data["points"]:
-        if point["curveNumber"] - starting_index == current_curve:
-            ind.append(point["pointNumber"])
-    return ind
-
-def generate_uci_ages_fig(*args):
-    layout = go.Layout(
-        #margin=dict(l=30, r=0, b=20, t=40),
-        xaxis_tickformat = '%d %B (%a)<br>%Y'
-    )
-
-    data = [
-        dict(
-            type="scatter",
-            x=df_uci.date,
-            y=df_uci['Menores de 60'],
-            name="Menores de 60",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            stackgroup='one',
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_uci.date,
-            y=df_uci['60 o mas'],
-            name="60 o más",
-            mode="lines+markers",
-            hoverinfo="x+y+name",
-            stackgroup='one',
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_camas_uci.date,
-            y=df_camas_uci['Camas UCI Habilitadas'],
-            name="Total camas UCI Habilitadas",
-            mode="lines",
-            hoverinfo="x+y+name",
-            line=dict(width=0.5, color='black', dash='dash'),
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-        dict(
-            type="scatter",
-            x=df_camas_uci.date,
-            y=df_camas_uci['Camas no Covid-19 ocupadas'],
-            name="Camas no Covid-19 ocupadas",
-            mode="lines",
-            hoverinfo="x+y+name",
-            stackgroup='one',
-            marker=dict(
-                symbol="hexagram-open", line={"width": "0.5"}
-            )
-        ),
-    ]
-
-    return {"data": data, "layout": layout}
-
-# Helper for extracting select index from bar
-def get_selection_by_bar(bar_selected_data):
-    dict = {}
-    if bar_selected_data is not None:
-        for point in bar_selected_data["points"]:
-            if point["x"] is not None:
-                dict[(point["x"])] = list(range(0, point["y"]))
-    return dict
 
 
 app.layout = html.Div(
@@ -396,36 +150,18 @@ app.layout = html.Div(
                     className="row",
                     id="top-row-graphs",
                     children=[
-                        # Well map
+                        # Vacunación
                         html.Div(
                             children=[
                                 build_graph_title("Avance vacunación por edad"),
-                                dcc.Graph(
-                                    id="well-map",
-                                    figure={
-                                        "layout": {
-                                            "paper_bgcolor": "#192444",
-                                            "plot_bgcolor": "#192444",
-                                        }
-                                    },
-                                    config={"scrollZoom": True, "displayModeBar": False},
-                                ),
+                                GraphWithSlider(preffix='vacunas-edad', data=df_vacunas, xaxis_field='datetime')
                             ],
                             className='graph-container'
                         ),
                         html.Div(
                             children=[
                                 build_graph_title("Avance vacunación por edad"),
-                                dcc.Graph(
-                                    id="ternary-map",
-                                    figure={
-                                        "layout": {
-                                            "paper_bgcolor": "#192444",
-                                            "plot_bgcolor": "#192444",
-                                        }
-                                    },
-                                    config={"scrollZoom": True, "displayModeBar": False},
-                                ),
+                                GraphWithSlider(preffix='vacunas-totales', data=df_vacunas, xaxis_field='datetime')
                             ],
                             className='graph-container'
                         ),
@@ -438,22 +174,20 @@ app.layout = html.Div(
             className="row",
             id="bottom-row",
             children=[
-                # Formation bar plots
                 html.Div(
                     id="form-bar-container",
                     className="six columns",
                     children=[
                         build_graph_title("Incremental de contagios entre días (no diarios)"),
-                        dcc.Graph(id="form-by-bar", config={"scrollZoom": True, "displayModeBar": False}),
+                        GraphWithSlider(preffix='inc-contagios-edad', data=df_casos_diarios, xaxis_field='date')
                     ],
                 ),
                 html.Div(
-                    # Selected well productions
                     id="well-production-container",
                     className="six columns",
                     children=[
                         build_graph_title("Distribución de edad de los contagios (% del total de contagios)"),
-                        dcc.Graph(id="production-fig", config={"scrollZoom": True, "displayModeBar": False}),
+                        GraphWithSlider(preffix='contagios-edad-dist', data=df_casos_diarios, xaxis_field='date')
                     ],
                 ),
             ],
@@ -463,128 +197,358 @@ app.layout = html.Div(
             className="row",
             id="uci-row",
             children=[
-                # Formation bar plots
                 html.Div(
                     id="uci-ages-container",
                     className="six columns",
                     children=[
                         build_graph_title("Pacientes UCI por edad (diarios)"),
-                        dcc.Graph(id="uci-ages-fig", config={"scrollZoom": True, "displayModeBar": False}),
+                        GraphWithSlider(preffix='uci-edad', data=df_uci, xaxis_field='date')
                     ],
                 ),
                 html.Div(
-                    # Selected well productions
                     id="uci-dist-container",
                     className="six columns",
                     children=[
-                        build_graph_title("Distribución de edad de los pacientes UCI"),
-                        dcc.Graph(id="uci-dist-fig", config={"scrollZoom": True, "displayModeBar": False}),
+                        build_graph_title("Distribución edad de contagios (% del grupo etario con respecto al total UCI)"),
+                        GraphWithSlider(preffix='uci-dist-edad', data=df_uci, xaxis_field='date')
                     ],
                 ),
             ],
-        ),
+        )
     ]
 )
 
 
-# Update bar plot
+# Update incremental de contagios
 @app.callback(
-    Output("form-by-bar", "figure"),
+    [Output("inc-contagios-edad-graph", "figure"), Output("inc-contagios-edad-min-val", "children"), Output("inc-contagios-edad-max-val", "children")],
     [
-        Input("well-map", "selectedData"),
-        Input("ternary-map", "selectedData"),
+        Input("inc-contagios-edad-slider", "value"),
     ],
 )
-def update_bar(map_selected_data, tern_selected_data):
+def update_inc_contagios(slider):
 
-
-    return generate_formation_bar(None, None)
-
-
-# Update ternary map
-@app.callback(
-    Output("ternary-map", "figure"),
-    [
-        Input("well-map", "selectedData"),
-        Input("form-by-bar", "selectedData"),
-        Input("form-by-bar", "clickData"),
-    ],
-    state=[State("ternary-map", "figure")],
-)
-def update_ternary_map(
-    map_selected_data,
-    bar_selected_data,
-    bar_click_data,
-    curr_fig,
-):
-    
-
-    return generate_vacs_total(
-        None, None, None, None
+    layout = go.Layout(
+        #margin=dict(l=30, r=0, b=20, t=40),
+        showlegend=False,
+        xaxis_tickformat = '%d %B (%a)<br>%Y'
     )
 
-# Update well map
+    numdate = {el[0]:el[1] for el in enumerate(list(df_casos_diarios['date'].unique()))}
+    aux = filter_dataset(df_casos_diarios, numdate[slider[0]], numdate[slider[1]], 'date')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['Menores de 60'],
+            name="Menores de 60",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['60 o mas'],
+            name="60 o más",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        )
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+
+# Update vacunas totales
 @app.callback(
-    Output("well-map", "figure"),
+    [Output("vacunas-totales-graph", "figure"), Output("vacunas-totales-min-val", "children"), Output("vacunas-totales-max-val", "children")],
     [
-        Input("ternary-map", "selectedData"),
-        Input("form-by-bar", "selectedData"),
-        Input("form-by-bar", "clickData"),
+        Input("vacunas-totales-slider", 'value'),
     ],
 )
-def update_well_map(
-    tern_selected_data, bar_selected_data, bar_click_data
-):
-    
+def update_vac_totales(slider):
 
-    return generate_well_map(None, None)
+    layout = go.Layout(
+        #margin=dict(l=30, r=0, b=20, t=40),
+        showlegend=False,
+        xaxis_tickformat = '%d %B (%a)<br>%Y'
+    )
 
-# Update well map
+    numdate = {el[0]:el[1] for el in enumerate(list(df_vacunas['datetime'].unique()))}
+    aux = filter_dataset(df_vacunas, numdate[slider[0]], numdate[slider[1]], 'datetime')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Primera'].datetime,
+            y=aux[aux['Dosis']=='Primera']['Total']/tot_chilenos*100,
+            name="1 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Segunda'].datetime,
+            y=aux[aux['Dosis']=='Segunda']['Total']/tot_chilenos*100,
+            name="2 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        )
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+# Update vacunas edad
 @app.callback(
-    Output("uci-ages-fig", "figure"),
+    [Output("vacunas-edad-graph", "figure"), Output("vacunas-edad-min-val", "children"), Output("vacunas-edad-max-val", "children")],
     [
-        Input("ternary-map", "selectedData"),
-        Input("form-by-bar", "selectedData"),
-        Input("form-by-bar", "clickData"),
-    ],
+        Input("vacunas-edad-slider", 'value'),
+    ]
+)
+def update_vacunas_edad(
+    slider
+):
+
+    layout = go.Layout(
+        #margin=dict(l=30, r=0, b=20, t=40),
+        showlegend=False,
+        xaxis_tickformat = '%d %B (%a)<br>%Y'
+    )
+
+    numdate = {el[0]:el[1] for el in enumerate(list(df_vacunas['datetime'].unique()))}
+    aux = filter_dataset(df_vacunas, numdate[slider[0]], numdate[slider[1]], 'datetime')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Primera'].datetime,
+            y=aux[aux['Dosis']=='Primera']['Menores de 60 (%)']*100,
+            name="< 60 - 1 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Segunda'].datetime,
+            y=aux[aux['Dosis']=='Segunda']['Menores de 60 (%)']*100,
+            name="< 60 - 1 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Primera'].datetime,
+            y=aux[aux['Dosis']=='Primera']['60 o mas (%)']*100,
+            name=">= 60 - 1 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux[aux['Dosis']=='Segunda'].datetime,
+            y=aux[aux['Dosis']=='Segunda']['60 o mas (%)']*100,
+            name=">= 60 - 2 Dosis",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        )
+    ]
+
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
+
+# Update uci edad
+@app.callback(
+    [Output("uci-edad-graph", "figure"), Output("uci-edad-min-val", "children"), Output("uci-edad-max-val", "children")],
+    [
+        Input("uci-edad-slider", 'value'),
+    ]
 )
 def update_uci_ages(
-    tern_selected_data, bar_selected_data, bar_click_data
+    slider
 ):
+    layout = go.Layout(
+        #margin=dict(l=30, r=0, b=20, t=40),
+        xaxis_tickformat = '%d %B (%a)<br>%Y'
+    )
 
-    return generate_uci_ages_fig(None, None)
+    numdate = {el[0]:el[1] for el in enumerate(list(df_uci['date'].unique()))}
+    aux = filter_dataset(df_uci, numdate[slider[0]], numdate[slider[1]], 'date')
+    aux_2 = filter_dataset(df_camas_uci, numdate[slider[0]], numdate[slider[1]], 'date')
+    
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['Menores de 60'],
+            name="Menores de 60",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            stackgroup='one',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['60 o mas'],
+            name="60 o más",
+            mode="lines+markers",
+            hoverinfo="x+y+name",
+            stackgroup='one',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux_2.date,
+            y=aux_2['Camas UCI Habilitadas'],
+            name="Total camas UCI Habilitadas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            line=dict(width=0.5, color='black', dash='dash'),
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux_2.date,
+            y=aux_2['Camas no Covid-19 ocupadas'],
+            name="Camas no Covid-19 ocupadas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            stackgroup='one',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
 
 # Update uci dist fig
 @app.callback(
-    Output("uci-dist-fig", "figure"),
+    [Output("uci-dist-edad-graph", "figure"), Output("uci-dist-edad-min-val", "children"), Output("uci-dist-edad-max-val", "children")],
     [
-        Input("ternary-map", "selectedData"),
-        Input("form-by-bar", "selectedData"),
-        Input("form-by-bar", "clickData"),
-    ],
+        Input("uci-dist-edad-slider", 'value'),
+    ]
 )
-def update_uci_ages(
-    tern_selected_data, bar_selected_data, bar_click_data
+def update_uci_dist(
+    slider
 ):
+    layout = dict(
+        xaxis=dict(title="Fecha"), yaxis=dict(title="Distribución edad de pacientes UCI")
+    )
 
-    return generate_uci_dist_fig(None)
+    numdate = {el[0]:el[1] for el in enumerate(list(df_uci['date'].unique()))}
+    aux = filter_dataset(df_uci, numdate[slider[0]], numdate[slider[1]], 'date')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['Menores de 60']/df_uci['Totales']*100,
+            name="Menores de 60",
+            mode="lines",
+            hoverinfo="x+y+name",
+            line=dict(width=0.5, color='rgb(131, 90, 241)'),
+            stackgroup='one',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['60 o mas']/aux['Totales']*100,
+            name="60 o mas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            stackgroup='one',
+            line=dict(width=0.5, color='rgb(111, 231, 219)'),
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
 
 
-# Update production plot
+# Update contagios distribucion edad
 @app.callback(
-    Output("production-fig", "figure"),
+    [Output("contagios-edad-dist-graph", "figure"), Output("contagios-edad-dist-min-val", "children"), Output("contagios-edad-dist-max-val", "children")],
     [
-        Input("well-map", "selectedData"),
-        Input("ternary-map", "selectedData"),
-        Input("form-by-bar", "selectedData"),
-    ],
+        Input("contagios-edad-dist-slider", 'value'),
+    ]
 )
-def update_production(map_select, tern_select, bar_select):
+def update_contagios_dist(slider):
 
     # Find which one has been triggered
-    
+    layout = dict(
+        xaxis=dict(title="Fecha"), yaxis=dict(title="Distribución (%)")
+    )
 
-    return generate_cases_stacked(None)
+    numdate = {el[0]:el[1] for el in enumerate(list(df_casos_diarios['date'].unique()))}
+    aux = filter_dataset(df_casos_diarios, numdate[slider[0]], numdate[slider[1]], 'date')
+
+    data = [
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['Menores de 60']/aux['Totales']*100,
+            name="Menores de 60",
+            mode="lines",
+            hoverinfo="x+y+name",
+            line=dict(width=0.5, color='rgb(131, 90, 241)'),
+            stackgroup='one',
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+        dict(
+            type="scatter",
+            x=aux.date,
+            y=aux['60 o mas']/aux['Totales']*100,
+            name="60 o mas",
+            mode="lines",
+            hoverinfo="x+y+name",
+            stackgroup='one',
+            line=dict(width=0.5, color='rgb(111, 231, 219)'),
+            marker=dict(
+                symbol="hexagram-open", line={"width": "0.5"}
+            )
+        ),
+    ]
+
+    return [{"data": data, "layout": layout}, dtparser.isoparse(str(numdate[slider[0]])).strftime("%d %B, %Y"), dtparser.isoparse(str(numdate[slider[1]])).strftime("%d %B, %Y")]
 
 
 # Running the server

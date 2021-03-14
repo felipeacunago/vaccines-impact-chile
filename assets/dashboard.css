@@ -12,6 +12,10 @@
     display: none;
 }
 
+/*
+
+*/
+
 /* Top-row
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 #top-row {
@@ -221,21 +225,8 @@
     flex-grow: 1;
 }
 
-#well-map-container {
-    /* margin: 0 -2rem 0 4rem; */
-    flex-grow: 1;
-}
-
 .graph-container {
     flex-grow: 1;
-}
-
-#ternary-map-container {
-    flex-grow: 1;
-}
-
-#mapbox-view-selector, #ternary-layer-select {
-    margin-bottom: 1rem;
 }
 
 /* hides the svg dom element that has the click handler responsible for toggling */
@@ -248,32 +239,12 @@
     #top-row-graphs {
         flex-direction: column;
     }
-
-    #well-map-container {
-        margin: 5rem 0 0 0;
-    }
-
-    #ternary-header {
-        margin: 5rem 0 0 0;
-    }
-
-    #ternary-map-container {
-        margin-bottom: 5rem;
-    }
-
     .graph-container {
         margin: 5rem 0 0 0;
     }
 }
 
 @media (min-width: 1001px) {
-    #well-map-container {
-        margin: 0 -2rem 0 4rem;
-    }
-
-    #ternary-header {
-        margin: 0 0 0 5rem;
-    }
     .graph-container {
         margin: 0 -2rem 0 4rem;
     }
@@ -402,16 +373,6 @@
         font-size: 1.5rem;
     }
 
-    /*#mapbox-view-selector, #*/
-    #ternary-map-container {
-        margin-bottom: 0;
-    }
-
-    #ternary-header {
-        position: relative;
-        z-index: 3;
-    }
-
     /* #ternary-map {
         position: relative;
         margin: -3rem 0 0 -6.5rem;
@@ -461,9 +422,6 @@
 }
 
 @media (max-width: 350px) {
-    #well-map{
-        height: 35rem;
-    }
     #bottom-row {
         margin-top: -8rem;
     }
