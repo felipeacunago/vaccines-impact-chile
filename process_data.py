@@ -16,7 +16,6 @@ def get_historic_file_git(file_path):
     filename = file_path.split('/')[-1]
     file_path_dir = file_path.replace(filename, '')
 
-    subprocess.run(['git', 'checkout','master'], cwd=file_path_dir)
 
     subprocess.run(f'git log --pretty=format:"%h|%ad| %s %d [%an]" --date=iso {filename} > commits.txt', shell=True, cwd=file_path_dir)
 
@@ -35,6 +34,8 @@ def get_historic_file_git(file_path):
 
     return df
 
+subprocess.run(['git', 'checkout','master'], cwd='Datos-COVID19')
+subprocess.run(['git', 'pull'], cwd='Datos-COVID19')
 
 df_vacunas = get_historic_file_git(file_path)
 
