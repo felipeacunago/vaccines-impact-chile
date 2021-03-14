@@ -1,4 +1,4 @@
-git clone --filter=blob:none --sparse https://github.com/MinCiencia/Datos-COVID19.git
+git clone --filter=blob:none --sparse 'https://github.com/MinCiencia/Datos-COVID19.git'
 
 cd Datos-COVID19
 git sparse-checkout add output/producto9/HospitalizadosUCIEtario_T.csv

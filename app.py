@@ -9,6 +9,10 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
+from environs import Env
+
+env = Env()
+env.read_env()
 
 # app initialize
 app = dash.Dash(
@@ -29,20 +33,22 @@ APP_PATH = str(pathlib.Path(__file__).parent.resolve())
 
 # fuentes de datos
 # tal vez reemplazar por SQL?
-df_vacunas = pd.read_csv("local_postprocessed_data/vacunas_diarias_edad_sexo.csv")
+src_path = env('BUCKET_DASH_LOCATION')
+
+df_vacunas = pd.read_csv(f"{src_path}/vacunas_diarias_edad_sexo.csv")
 
 df_vacunas['datetime'] = pd.to_datetime(df_vacunas['datetime'])
 df_vacunas['Total'] = df_vacunas[['60 o mas','Menores de 60']].sum(axis=1)
 
-df_casos_diarios = pd.read_csv('local_postprocessed_data/casos_diarios.csv')
+df_casos_diarios = pd.read_csv(f'{src_path}/casos_diarios.csv')
 df_casos_diarios = df_casos_diarios[['date','60 o mas','Menores de 60','Totales']]
 df_casos_diarios[['60 o mas','Menores de 60','Totales']] = df_casos_diarios[['60 o mas','Menores de 60','Totales']].fillna(0).astype(int)
 df_casos_diarios['date'] = pd.to_datetime(df_casos_diarios['date'])
 
-df_uci = pd.read_csv('local_postprocessed_data/uci_diarios.csv')
+df_uci = pd.read_csv(f'{src_path}/uci_diarios.csv')
 
 # total camas
-df_camas_uci = pd.read_csv('local_postprocessed_data/camas_uci.csv')
+df_camas_uci = pd.read_csv(f'{src_path}/camas_uci.csv')
 
 
 def build_banner():
