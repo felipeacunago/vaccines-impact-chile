@@ -64,12 +64,10 @@ df_grouped['Menores de 60 (%)'] = df_grouped['Menores de 60']/under_60_tot
 df_grouped.to_csv(f'{destination_folder}/vacunas_diarias_edad_sexo.csv')
 
 # casos genero-edad
-src_path = "Datos-COVID19/output/producto16/CasosGeneroEtarioEtapaClinica.csv"
+src_path = "Datos-COVID19/output/producto16/CasosGeneroEtario.csv"
 df_casos = pd.read_csv(src_path)
 
-df_casos['Etapa clinica'] = df_casos['Etapa clinica'].fillna('Ninguna')
-df_casos = df_casos[df_casos['Etapa clinica']=='Ninguna'].groupby('Grupo de edad').sum().transpose()
-df_casos.drop(df_casos.tail(1).index, inplace=True)
+df_casos = df_casos.groupby('Grupo de edad').sum().transpose()
 
 df_casos_fixed = pd.DataFrame(index=pd.date_range(df_casos.index.min(),df_casos.index.max(), freq="D"))
 df_casos_fixed = df_casos_fixed.join(df_casos, how='left')
