@@ -109,8 +109,8 @@ graphs_data = [
     {
         'name': 'fallecidos-edad',
         'data': [
-            {'x': df_casos_diarios.date, 'y': df_casos_diarios['Menores de 60'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'},
-            {'x': df_casos_diarios.date, 'y': df_casos_diarios['60 o mas'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'}
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 60'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['60 o mas'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'}
         ],
         'layout': {'xaxis_tickformat': '%d %B (%a)<br>%Y'}
     },
