@@ -114,8 +114,9 @@ camas_uci_proc = camas_uci[['Region','Total','Total.2']].rename(columns={'Region
 camas_uci_proc.drop(camas_uci_proc.head(1).index, inplace=True)
 camas_uci_proc.set_index('date', inplace=True)
 camas_uci_proc = camas_uci_proc.join(pd.DataFrame(index=pd.date_range(camas_uci_proc.index.max(),datetime.now(), freq="D")), how='outer')
-camas_uci_proc = camas_uci_proc[['Camas UCI Habilitadas','Camas no Covid-19 ocupadas']].fillna(method='ffill')
+camas_uci_proc = camas_uci_proc.fillna(method='ffill')
 camas_uci_proc.reset_index(inplace=True)
+print(camas_uci_proc)
 camas_uci_proc.rename(columns={'index':'date'}, inplace=True)
 camas_uci_proc.to_csv(f'{destination_folder}/camas_uci.csv')
 
