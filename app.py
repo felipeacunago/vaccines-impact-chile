@@ -79,14 +79,14 @@ app.layout = html.Div(
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Contagios diarios por grupo etario"),
+                        build_graph_title("Avance vacunación por edad"),
                         graphs['vacunas-edad']
                     ],
                 ),
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Contagios por grupo etario en Base 100 (con respecto a número contagios de su grupo etario el 03/02/21)"),
+                        build_graph_title("Avance vacunación general"),
                         graphs['vacunas-totales']
                     ],
                 ),
