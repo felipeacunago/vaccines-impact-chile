@@ -114,3 +114,16 @@ camas_uci_proc.drop(camas_uci_proc.tail(1).index, inplace=True)
 
 
 camas_uci_proc.to_csv(f'{destination_folder}/camas_uci.csv')
+
+# muertes
+src_path = "Datos-COVID19/output/producto10/FallecidosEtario_T.csv"
+
+df_muertes_diarias = pd.read_csv(src_path)
+df_muertes_diarias.rename(columns={'Grupo de edad':'date'}, inplace=True)
+df_muertes_diarias['60 o mas'] = df_muertes_diarias[['60-69','70-79','80-89','>=90']].sum(axis=1)
+df_muertes_diarias['Menores de 60'] = df_muertes_diarias[['<=39','40-49','50-59']].sum(axis=1)
+df_muertes_diarias['Totales'] = df_muertes_diarias[['Menores de 60', '60 o mas']].sum(axis=1)
+df_muertes_diarias.set_index('date', inplace=True)
+df_muertes_diarias = df_muertes_diarias.diff(1)
+df_muertes_diarias.drop(df_muertes_diarias.head(1).index, inplace=True)
+df_muertes_diarias.to_csv(f'{destination_folder}/fallecidos_diarios.csv')

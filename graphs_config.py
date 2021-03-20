@@ -1,0 +1,126 @@
+import pandas as pd
+from environs import Env
+
+env = Env()
+env.read_env()
+
+tot_chilenos = 19116208
+
+# fuentes de datos
+# tal vez reemplazar por SQL?
+src_path = env('BUCKET_DASH_LOCATION')
+
+df_vacunas = pd.read_csv(f"{src_path}/vacunas_diarias_edad_sexo.csv")
+
+df_vacunas['datetime'] = pd.to_datetime(df_vacunas['datetime'])
+df_vacunas['Total'] = df_vacunas[['60 o mas','Menores de 60']].sum(axis=1)
+
+df_casos_diarios = pd.read_csv(f'{src_path}/casos_diarios.csv')
+df_casos_diarios = df_casos_diarios[['date','60 o mas','Menores de 60','Totales']]
+df_casos_diarios[['60 o mas','Menores de 60','Totales']] = df_casos_diarios[['60 o mas','Menores de 60','Totales']].fillna(0).astype(int)
+df_casos_diarios['date'] = pd.to_datetime(df_casos_diarios['date'])
+
+df_uci = pd.read_csv(f'{src_path}/uci_diarios.csv')
+
+# total camas
+df_camas_uci = pd.read_csv(f'{src_path}/camas_uci.csv')
+
+# fallecidos
+df_muertes_diarias = pd.read_csv(f'{src_path}/fallecidos_diarios.csv')
+
+# config default para valores con %
+default_layout_config = {
+    'showlegend': False,
+    'xaxis_tickformat' : '%d %B (%a)<br>%Y',
+    'yaxis_tickformat' : ',.1%',
+    'margin' : {'l': 50, 'r': 50, 't': 30, 'b': 50},
+}
+
+# graficos a hacer con datos y layout
+graphs_data = [
+    {
+        'name': 'vacunas-totales',
+        'data': [
+            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['Total']/tot_chilenos, 'name': '1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i> - '+'<b>%{text:,}</b>', 'text': df_vacunas[df_vacunas['Dosis']=='Primera']['Total'].to_list() }, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['Total']/tot_chilenos, 'name': '2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i> - '+'<b>%{text:,}</b>', 'text': df_vacunas[df_vacunas['Dosis']=='Segunda']['Total'].to_list() }, 'type': 'Scatter'}
+        ],
+        'layout': default_layout_config
+    },
+    {
+        'name': 'vacunas-edad',
+        'data': [
+            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['Menores de 60 (%)'], 'name': '< 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>'}, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['Menores de 60 (%)'], 'name': '< 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>'}, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['60 o mas (%)'], 'name': '>= 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>'}, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['60 o mas (%)'], 'name': '>= 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>'}, 'type': 'Scatter'},
+        ],
+        'layout': default_layout_config
+    },
+    {
+        'name': 'inc-contagios-edad',
+        'data': [
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['Menores de 60'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'},
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['60 o mas'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat': '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'inc-contagios-base100',
+        'data': [
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['Menores de 60']/df_casos_diarios[df_casos_diarios['date']=='2021-02-03']['Menores de 60'].iloc[0]*100, 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i> - ' }, 'type': 'Scatter'},
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['60 o mas']/df_casos_diarios[df_casos_diarios['date']=='2021-02-03']['60 o mas'].iloc[0]*100, 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i> - ' }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'uci-edad',
+        'data': [
+            {'x': df_uci.date, 'y': df_uci['Menores de 60'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'stackgroup': 'one' }, 'type': 'Scatter'},
+            {'x': df_uci.date, 'y': df_uci['60 o mas'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'stackgroup': 'one' }, 'type': 'Scatter'},
+            {'x': df_camas_uci.date, 'y': df_camas_uci['Camas no Covid-19 ocupadas'], 'name': "Camas no Covid-19 ocupadas", 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'stackgroup': 'one', 'line': {'color': 'red'} }, 'type': 'Scatter'},
+            {'x': df_camas_uci.date, 'y': df_camas_uci['Camas UCI Habilitadas'], 'name': "Total camas UCI Habilitadas", 'type': 'Scatter', 'kwargs': {'line': {'width': 0.5, 'color': 'black', 'dash': 'dash'}}}
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'uci-dist-edad',
+        'data': [
+            {'x': df_uci.date, 'y': df_uci['Menores de 60']/df_uci['Totales'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'stackgroup': 'one' }, 'type': 'Scatter'},
+            {'x': df_uci.date, 'y': df_uci['60 o mas']/df_uci['Totales'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'stackgroup': 'one' }, 'type': 'Scatter'},
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'uci-edad-base-100-60',
+        'data': [
+            {'x': df_uci.date, 'y': df_uci['Menores de 60']/df_uci[df_uci['date']=='2021-02-03']['Menores de 60'].iloc[0]*100, 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i>' }, 'type': 'Scatter'},
+            {'x': df_uci.date, 'y': df_uci['60 o mas']/df_uci[df_uci['date']=='2021-02-03']['60 o mas'].iloc[0]*100, 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i>',  'fill': 'tonexty' }, 'type': 'Scatter'},
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'uci-edad-base-100-70',
+        'data': [
+            {'x': df_uci.date, 'y': df_uci[['<=39','40-49']].sum(axis=1)/df_uci[df_uci['date']=='2021-02-03'][['<=39','40-49']].sum(axis=1).iloc[0]*100, 'name': 'Menores de 50', 'kwargs': { 'hovertemplate':'<i>%{y}</i>'}, 'type': 'Scatter'},
+            {'x': df_uci.date, 'y': df_uci['>=70']/df_uci[df_uci['date']=='2021-02-03']['>=70'].iloc[0]*100, 'name': '70 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'fill': 'tonexty' }, 'type': 'Scatter'},
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'fallecidos-edad',
+        'data': [
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['Menores de 60'], 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'},
+            {'x': df_casos_diarios.date, 'y': df_casos_diarios['60 o mas'], 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i> - ' }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat': '%d %B (%a)<br>%Y'}
+    },
+    {
+        'name': 'fallecidos-edad-base100',
+        'data': [
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 60']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['Menores de 60'].iloc[0]*100, 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i> - ' }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['60 o mas']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['60 o mas'].iloc[0]*100, 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i> - ' }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B (%a)<br>%Y'}
+    },
+
+]

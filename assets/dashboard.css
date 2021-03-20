@@ -216,14 +216,8 @@
     }
 }
 
-/* Top-row-graphs
+/* row-graphs
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-#top-row-graphs {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    flex-grow: 1;
-}
 
 .graph-container {
     flex-grow: 1;
@@ -347,13 +341,6 @@
 @media (max-width: 750px) {
     /*For some reason, at around 700px, a font-size is set to the ternary map text, so !important tag is needed to
     override it*/
-    /* #ternary-map * {
-        font-size: 1.1rem !important;
-    } */
-
-    #top-row .legendtext {
-        font-size: 1.25rem !important;
-    }
 
     .atitle, .btitle, .ctitle {
         font-size: 1.25rem !important;
@@ -372,21 +359,6 @@
     .graph-title {
         font-size: 1.5rem;
     }
-
-    /* #ternary-map {
-        position: relative;
-        margin: -3rem 0 0 -6.5rem;
-        z-index: 1;
-    } */
-/* 
-    #ternary-map * {
-        font-size: 1.8vw !important;
-    } */
-
-    #top-row .legendtext {
-        font-size: 1.1rem !important;
-    }
-
     .atitle, .btitle, .ctitle {
         font-size: 1.1rem !important;
     }
@@ -422,16 +394,7 @@
 }
 
 @media (max-width: 350px) {
-    #bottom-row {
-        margin-top: -8rem;
-    }
-    #ternary-map {
-        height: 35rem;
-    }
-/* 
-    #ternary-map {
-        margin: -9rem 0 0 -6.5rem;
-    } */
+
     .graph-container{
         height: 35rem;
     }
@@ -439,53 +402,23 @@
 
 /* Bottom row
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-#bottom-row {
+
+.graphs.row {
     padding: 5rem;
     background-color: #f2f5fa;
 }
 
-#bottom-row .graph-title {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 800;
-    margin-bottom: 2rem;
-}
-
-#uci-row {
-    padding: 5rem;
-    background-color: #f2f5fa;
-}
-
-#uci-base100-row {
-    padding: 5rem;
-    background-color: #f2f5fa;
-}
-
-#uci-row .graph-title {
+.graphs.row .graph-title{
     font-family: "Open Sans", sans-serif;
     font-weight: 800;
     margin-bottom: 2rem;
 }
 
 @media (max-width: 1000px) {
-    #bottom-row {
+    .graphs.row {
         display: flex;
         flex-direction: column;
         padding: 4rem 4vw;
-    }
-
-    #uci-row {
-        display: flex;
-        flex-direction: column;
-        padding: 4rem 4vw;
-    }
-
-    #form-bar-container, #well-production-container, #uci-ages-container{
-        width: 100%;
-        margin: 0;
-    }
-
-    #form-bar-container, #uci-ages-container{
-        margin-bottom: 5rem;
     }
 }
 
