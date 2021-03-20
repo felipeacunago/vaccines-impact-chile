@@ -166,7 +166,7 @@ app.layout = html.Div(
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Fallecidos por grupo etario base 100 (con respecto a número fallecidos de su grupo etario el 03/02/21)"),
+                        build_graph_title("Promedio a 7 días de fallecidos por grupo etario base 100 (con respecto a número fallecidos de su grupo etario el 03/02/21)"),
                         graphs['fallecidos-edad-base100']
                     ],
                 ),

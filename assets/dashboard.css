@@ -18,12 +18,6 @@
 
 /* Top-row
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-#top-row {
-    background-color: #192444;
-    padding: 0 5rem;
-    display: flex;
-    align-items: stretch;
-}
 
 @media (min-width: 1400px) {
     #top-row {
@@ -59,12 +53,6 @@
     margin-bottom: 5rem;
 }
 
-#well-map-container .graph-title, #ternary-map-container .graph-title, #header-container .graph-title {
-    font-family: 'Open Sans', sans-serif;
-    text-transform: uppercase;
-    font-weight: 800;
-    color: white;
-}
 
 .graph-container > .graph-title {
     font-family: 'Open Sans', sans-serif;
@@ -242,6 +230,9 @@
     .graph-container {
         margin: 0 -2rem 0 4rem;
     }
+    .graphs.row {
+        padding: 5rem;
+    }
 }
 
 @media (min-width: 1001px) and (max-width: 1400px) {
@@ -250,6 +241,7 @@
         flex-direction: row;
         align-items: stretch;
     }
+
 }
 
 @media (min-width: 1401px) {
@@ -319,12 +311,6 @@
 }
 
 @media (max-width: 1000px) {
-    #top-row {
-        padding: 0 4vw;
-        padding-bottom: 100px;
-    }
-
-
     #top-row .legendtext {
         font-size: 1.25rem !important;
     }
@@ -355,10 +341,13 @@
     }
 }
 
+/* solo en celu */
 @media (max-width: 550px) {
     .graph-title {
         font-size: 1.5rem;
+        padding-top: 100px;
     }
+    
     .atitle, .btitle, .ctitle {
         font-size: 1.1rem !important;
     }
@@ -404,11 +393,12 @@
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 .graphs.row {
-    padding: 5rem;
     background-color: #f2f5fa;
 }
 
-.graphs.row .graph-title{
+
+
+.graphs.row > .graph-title{
     font-family: "Open Sans", sans-serif;
     font-weight: 800;
     margin-bottom: 2rem;
@@ -418,21 +408,13 @@
     .graphs.row {
         display: flex;
         flex-direction: column;
-        padding: 4rem 4vw;
     }
 }
 
-@media (max-width: 550px) {
-    #bottom-row .xtitle, #bottom-row .ytitle {
-        font-size: 1.2rem !important
-    }
+.slider-text {
+    font-size: small;
 }
 
-@media (max-width: 550px) {
-    #bottom-row .xtitle, #bottom-row .ytitle {
-        font-size: 1rem !important
-    }
-    #bottom-row .legendtext{
-        font-size: 0.8rem !important;
-    }
+.six.columns > .graph-title {
+    font-weight: bold;
 }

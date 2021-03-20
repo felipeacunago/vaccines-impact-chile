@@ -33,10 +33,10 @@ class GraphWithSlider(html.Div):
     def generate_children(self):
 
         numdate = {el[0]:el[1] for el in enumerate(list(self.data_json[0]['x']))}
-        # x_min = list(numdate.keys())[0]
-        # x_max = list(numdate.keys())[-1]
-        x_min = list(numdate.keys())[list(numdate.values()).index(self.initial_min)] if self.initial_min else list(numdate.keys())[0]
+        x_min = list(numdate.keys())[0]
         x_max = list(numdate.keys())[-1]
+        # x_min = list(numdate.keys())[list(numdate.values()).index(self.initial_min)] if self.initial_min else list(numdate.keys())[0]
+        # x_max = list(numdate.keys())[-1]
 
         graph = dcc.Graph(
                     id=f"{self.preffix}-graph",
@@ -54,19 +54,22 @@ class GraphWithSlider(html.Div):
                 id=f"{self.preffix}-slider",
                 min=x_min,
                 max=x_max,
-                value=[x_min, x_max]
+                value=[
+                    list(numdate.keys())[list(numdate.values()).index(self.initial_min)] if self.initial_min else list(numdate.keys())[0],
+                    list(numdate.keys())[list(numdate.values()).index(self.initial_max)] if self.initial_max else list(numdate.keys())[-1]
+                ]
             ),
             className='two-thirds column'
         )
 
         # si se setea el valor inicial se usa ese
-        selected_min = html.Div(id=f'{self.preffix}-min-val', children=dtparser.isoparse(str(numdate[x_min])).strftime("%d %B, %Y"), className='one-sixth column')
-        selected_max = html.Div(id=f'{self.preffix}-max-val', children=dtparser.isoparse(str(numdate[x_max])).strftime("%d %B, %Y"), className='one-sixth column')
+        selected_min = html.P(id=f'{self.preffix}-min-val', children=dtparser.isoparse(str(numdate[x_min])).strftime("%d %B, %Y"), className='slider-text')
+        selected_max = html.P(id=f'{self.preffix}-max-val', children=dtparser.isoparse(str(numdate[x_max])).strftime("%d %B, %Y"), className='slider-text')
 
         children = html.Div(
             [
                 html.Div(graph, className='row'),
-                html.Div([selected_min, slider,selected_max], className='slider row')
+                html.Div(html.Div([html.Div(children=selected_min, className='one-sixth column'), slider,html.Div(selected_max, className='one-sixth column')], className='slider row'), className='container')
             ], className='container'
         )
 
