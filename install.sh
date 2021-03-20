@@ -8,3 +8,4 @@ git sparse-checkout add output/producto16/CasosGeneroEtario.csv
 git sparse-checkout add output/producto58/Camas_UCI_diarias_t.csv
 git sparse-checkout add output/producto78/total_vacunados_sexo_edad.csv
 git sparse-checkout add output/producto10/FallecidosEtario.csv
+git sparse-checkout add output/producto10/FallecidosEtario_T.csv
