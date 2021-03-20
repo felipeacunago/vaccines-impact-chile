@@ -115,7 +115,7 @@ camas_uci_proc.drop(camas_uci_proc.head(1).index, inplace=True)
 camas_uci_proc.set_index('date', inplace=True)
 camas_uci_proc = camas_uci_proc.join(pd.DataFrame(index=pd.date_range(camas_uci_proc.index.max(),datetime.now(), freq="D")), how='outer')
 camas_uci_proc = camas_uci_proc.fillna(method='ffill')
-camas_uci_proc.reset_index().to_csv(f'{destination_folder}/camas_uci.csv')
+camas_uci_proc.reset_index().rename(columns={'index':'date'}).to_csv(f'{destination_folder}/camas_uci.csv')
 
 # muertes
 src_path = "Datos-COVID19/output/producto10/FallecidosEtario_T.csv"
