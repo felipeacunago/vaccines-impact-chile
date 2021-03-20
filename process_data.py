@@ -116,8 +116,8 @@ camas_uci_proc.set_index('date', inplace=True)
 camas_uci_proc = camas_uci_proc.join(pd.DataFrame(index=pd.date_range(camas_uci_proc.index.max(),datetime.now(), freq="D")), how='outer')
 camas_uci_proc = camas_uci_proc.fillna(method='ffill')
 camas_uci_proc.reset_index(inplace=True)
-print(camas_uci_proc)
 camas_uci_proc.rename(columns={'index':'date'}, inplace=True)
+print(camas_uci_proc)
 camas_uci_proc.to_csv(f'{destination_folder}/camas_uci.csv')
 
 # muertes
