@@ -44,7 +44,7 @@ def build_graph_title(title):
     return html.P(className="graph-title", children=title)
         
 
-graphs = { graph_data['name']: GraphWithSlider(preffix=graph_data['name'], data_json=graph_data['data'], layout_kwargs=graph_data['layout']) for graph_data in graphs_data}
+graphs = { graph_data['name']: GraphWithSlider(preffix=graph_data['name'], data_json=graph_data['data'], layout_kwargs=graph_data['layout'], **graph_data.get('kwargs', {})) for graph_data in graphs_data}
 
 
 app.layout = html.Div(
@@ -80,7 +80,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Contagios diarios por grupo etario"),
-                        # GraphWithSlider(preffix='inc-contagios-edad', data=df_casos_diarios, xaxis_field='date')
                         graphs['vacunas-edad']
                     ],
                 ),
@@ -88,7 +87,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Contagios por grupo etario en Base 100 (con respecto a número contagios de su grupo etario el 03/02/21)"),
-                        # GraphWithSlider(preffix='contagios-edad-dist', data=df_casos_diarios, xaxis_field='date')
                         graphs['vacunas-totales']
                     ],
                 ),
@@ -102,15 +100,13 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Contagios diarios por grupo etario"),
-                        # GraphWithSlider(preffix='inc-contagios-edad', data=df_casos_diarios, xaxis_field='date')
                         graphs['inc-contagios-edad']
                     ],
                 ),
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Contagios por grupo etario en Base 100 (con respecto a número contagios de su grupo etario el 03/02/21)"),
-                        # GraphWithSlider(preffix='contagios-edad-dist', data=df_casos_diarios, xaxis_field='date')
+                        build_graph_title("Contagios por grupo etario en base 100 (con respecto a número contagios de su grupo etario el 03/02/21)"),
                         graphs['inc-contagios-base100']
                     ],
                 ),
@@ -124,7 +120,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Pacientes UCI por edad (diarios)"),
-                        # GraphWithSlider(preffix='uci-edad', data=df_uci, xaxis_field='date')
                         graphs['uci-edad']
                     ],
                 ),
@@ -132,7 +127,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Distribución edad de pacientes UCI (% del grupo etario con respecto al total UCI)"),
-                        # GraphWithSlider(preffix='uci-dist-edad', data=df_uci, xaxis_field='date')
                         graphs['uci-dist-edad']
                     ],
                 ),
@@ -146,7 +140,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Pacientes UCI base 100 (con respecto a número hospitalizados de su grupo etario el 03/02/21)"),
-                        # GraphWithSlider(preffix='uci-edad-base-100-60', data=df_uci, xaxis_field='date')
                         graphs["uci-edad-base-100-60"]
                     ],
                 ),
@@ -154,7 +147,6 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Pacientes UCI base 100 (con respecto a número hospitalizados de su grupo etario el 03/02/21)"),
-                        # GraphWithSlider(preffix='uci-edad-base-100-70', data=df_uci, xaxis_field='date')
                         graphs["uci-edad-base-100-70"]
                     ],
                 ),
@@ -168,15 +160,13 @@ app.layout = html.Div(
                     className="six columns",
                     children=[
                         build_graph_title("Fallecidos diarios por grupo etario"),
-                        # GraphWithSlider(preffix='inc-contagios-edad', data=df_casos_diarios, xaxis_field='date')
                         graphs['fallecidos-edad']
                     ],
                 ),
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Fallecidos por grupo etario en Base 100 (con respecto a número fallecidos de su grupo etario el 03/02/21)"),
-                        # GraphWithSlider(preffix='contagios-edad-dist', data=df_casos_diarios, xaxis_field='date')
+                        build_graph_title("Fallecidos por grupo etario base 100 (con respecto a número fallecidos de su grupo etario el 03/02/21)"),
                         graphs['fallecidos-edad-base100']
                     ],
                 ),

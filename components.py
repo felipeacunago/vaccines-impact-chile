@@ -13,11 +13,14 @@ def filter_dataset(dataset, min_value, max_value, filter_field):
     ]
 
 class GraphWithSlider(html.Div):
-    def __init__(self, children=None, className=None, preffix='', data=None, data_json=None, layout_kwargs=None):
+    def __init__(self, children=None, className=None, preffix='', data_json=None, layout_kwargs=None, **kwargs):
         self.preffix = preffix
-        self.data = data
         self.data_json = data_json
         self.layout_kwargs = layout_kwargs
+
+        self.initial_min = kwargs.get('initial_min')
+        self.initial_max = kwargs.get('initial_max')
+
         super().__init__(children=self.generate_children(), className=className)
 
     def layout(self):
@@ -30,7 +33,9 @@ class GraphWithSlider(html.Div):
     def generate_children(self):
 
         numdate = {el[0]:el[1] for el in enumerate(list(self.data_json[0]['x']))}
-        x_min = list(numdate.keys())[0]
+        # x_min = list(numdate.keys())[0]
+        # x_max = list(numdate.keys())[-1]
+        x_min = list(numdate.keys())[list(numdate.values()).index(self.initial_min)] if self.initial_min else list(numdate.keys())[0]
         x_max = list(numdate.keys())[-1]
 
         graph = dcc.Graph(
@@ -54,6 +59,7 @@ class GraphWithSlider(html.Div):
             className='two-thirds column'
         )
 
+        # si se setea el valor inicial se usa ese
         selected_min = html.Div(id=f'{self.preffix}-min-val', children=dtparser.isoparse(str(numdate[x_min])).strftime("%d %B, %Y"), className='one-sixth column')
         selected_max = html.Div(id=f'{self.preffix}-max-val', children=dtparser.isoparse(str(numdate[x_max])).strftime("%d %B, %Y"), className='one-sixth column')
 
@@ -72,17 +78,17 @@ class GraphWithSlider(html.Div):
         def update_graph(slider):
 
             numdate = {el[0]:el[1] for el in enumerate(list(self.data_json[0]['x']))}
-            min_selected = numdate[slider[0]]
-            max_selected = numdate[slider[1]]
+            selected_min = numdate[slider[0]]
+            selected_max = numdate[slider[1]]
 
             data = [
                 getattr(go, series['type'])(
                     **{
-                        'x': filter_dataset(pd.DataFrame(list(zip(series['x'], series['y'])), columns=['x','y']), min_selected, max_selected, 'x')['x'], 
-                        'y': filter_dataset(pd.DataFrame(list(zip(series['x'], series['y'])), columns=['x','y']), min_selected, max_selected, 'x')['y'],
+                        'x': filter_dataset(pd.DataFrame(list(zip(series['x'], series['y'])), columns=['x','y']), selected_min, selected_max, 'x')['x'], 
+                        'y': filter_dataset(pd.DataFrame(list(zip(series['x'], series['y'])), columns=['x','y']), selected_min, selected_max, 'x')['y'],
                         'name': series['name'],
                         **series['kwargs']
                     }) for series in self.data_json]
 
-            return [{"data": data, "layout": self.layout()}, dtparser.isoparse(str(min_selected)).strftime("%d %B, %Y"), dtparser.isoparse(str(max_selected)).strftime("%d %B, %Y")]
+            return [{"data": data, "layout": self.layout()}, dtparser.isoparse(str(selected_min)).strftime("%d %B, %Y"), dtparser.isoparse(str(selected_max)).strftime("%d %B, %Y")]
         return update_graph
