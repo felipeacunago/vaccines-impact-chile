@@ -23,7 +23,7 @@ df_casos_diarios['date'] = pd.to_datetime(df_casos_diarios['date'])
 df_uci = pd.read_csv(f'{src_path}/uci_diarios.csv')
 
 # total camas
-df_camas_uci = pd.read_csv(f'{src_path}/camas_uci.csv')
+df_camas_uci = pd.read_csv(f'{src_path}/camas_uci_general.csv')
 
 # fallecidos
 df_muertes_diarias = pd.read_csv(f'{src_path}/fallecidos_diarios.csv')
