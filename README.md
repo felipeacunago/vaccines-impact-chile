@@ -37,7 +37,7 @@ El archivo `app.py` contiene el dashboard y junta todo para levantar el servidor
 
     $ python app.py
 
-Este archivo importa `components.py` y `graphs.config.py`, que contienen componentes y la configuración de los gráficos.
+Este módulo importa `components.py` y `graphs.config.py`, que contienen componentes y la configuración de los gráficos.
 La fuente de datos es la carpeta que haya sido seteada en la variable de entorno BUCKET_DASH_LOCATION.
 
 # Fuentes de datos
@@ -45,4 +45,4 @@ La fuente de datos es el github oficial del MinCiencia https://github.com/MinCie
 
 Se incorpora el script `install.sh`, que hace un checkout sparse de modo de no tener que bajar todo el repositorio.
 
-Luego es necesario ejecutar el script `process_data.py` que hace algunas transformaciones y los deja en la carpeta de salida (BUCKET_LOCATION).
+Luego, es necesario ejecutar el script `process_data.py` que hace algunas transformaciones y los deja en la carpeta de salida (BUCKET_LOCATION).

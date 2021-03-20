@@ -21,6 +21,7 @@ app = dash.Dash(
 )
 server = app.server
 app.config["suppress_callback_exceptions"] = True
+app.title = 'Impacto Vacunación en Chile'
 
 
 # Load data
