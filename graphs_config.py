@@ -45,10 +45,10 @@ graphs_data = [
     {
         'name': 'vacunas-edad',
         'data': [
-            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['Menores de 60 (%)'], 'name': '< 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#ff7f0e'}, 'opacity': 0.4 }, 'type': 'Scatter'},
-            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['Menores de 60 (%)'], 'name': '< 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#ff7f0e'} }, 'type': 'Scatter'},
-            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['60 o mas (%)'], 'name': '>= 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#1f77b4'}, 'opacity': 0.4}, 'type': 'Scatter'},
-            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['60 o mas (%)'], 'name': '>= 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>','line': {'color': '#1f77b4'}}, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['Menores de 60 (%)'], 'name': '< 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#1f77b4'}, 'opacity': 0.4 }, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['Menores de 60 (%)'], 'name': '< 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#1f77b4'} }, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Primera'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Primera']['60 o mas (%)'], 'name': '>= 60 - 1 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>', 'line': {'color': '#ff7f0e'}, 'opacity': 0.4}, 'type': 'Scatter'},
+            {'x': df_vacunas[df_vacunas['Dosis']=='Segunda'].datetime, 'y': df_vacunas[df_vacunas['Dosis']=='Segunda']['60 o mas (%)'], 'name': '>= 60 - 2 Dosis', 'kwargs': { 'hovertemplate':'<i>%{y:.1%}</i>','line': {'color': '#ff7f0e'}}, 'type': 'Scatter'},
         ],
         'layout': {'xaxis_tickformat' : '%d %B <br>%Y', 'yaxis_tickformat' : ',.1%', 'legend': {'yanchor': 'top', 'y': 0.99, 'xanchor': 'left', 'x': 0.01}, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50} }
     },
