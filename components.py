@@ -69,7 +69,7 @@ class GraphWithSlider(html.Div):
         children = html.Div(
             [
                 html.Div(graph, className='row'),
-                html.Div(html.Div([html.Div(children=selected_min, className='one-sixth column'), slider,html.Div(selected_max, className='one-sixth column')], className='slider row'), className='container')
+                html.Div([html.Div(children=selected_min, className='one-sixth column', style={'padding-left':'10px'}), slider,html.Div(selected_max, className='one-sixth column')], className='slider row')
             ], className='container'
         )
 
