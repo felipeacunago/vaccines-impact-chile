@@ -172,6 +172,26 @@ app.layout = html.Div(
                 ),
             ],
         ),
+        # row de contagios 50-70
+        html.Div(
+            className="graphs row",
+            children=[
+                html.Div(
+                    className="six columns",
+                    children=[
+                        build_graph_title("Fallecidos diarios por grupo etario"),
+                        graphs['fallecidos-edad-70']
+                    ],
+                ),
+                html.Div(
+                    className="six columns",
+                    children=[
+                        build_graph_title("Promedio a 7 días de fallecidos por grupo etario base 100 (con respecto a número fallecidos de su grupo etario el 03/02/21)"),
+                        graphs['fallecidos-edad-70-base100']
+                    ],
+                ),
+            ],
+        ),
     ]
 )
 

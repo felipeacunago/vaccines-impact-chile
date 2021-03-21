@@ -31,6 +31,12 @@ df_muertes_diarias = pd.read_csv(f'{src_path}/fallecidos_diarios.csv')
 df_muertes_diarias['60 o mas (SMA-7)'] = df_muertes_diarias['60 o mas'].rolling(window=7).mean()
 df_muertes_diarias['Menores de 60 (SMA-7)'] = df_muertes_diarias['Menores de 60'].rolling(window=7).mean()
 
+# corte 50-70
+df_muertes_diarias['Menores de 50'] = df_muertes_diarias[['<=39','40-49']].sum(axis=1)
+df_muertes_diarias['70 o más'] = df_muertes_diarias[['70-79','80-89','>=90']].sum(axis=1)
+df_muertes_diarias['Menores de 50 (SMA-7)'] = df_muertes_diarias['Menores de 50'].rolling(window=7).mean()
+df_muertes_diarias['70 o más (SMA-7)'] = df_muertes_diarias['70 o más'].rolling(window=7).mean()
+
 
 # graficos a hacer con datos y layout
 graphs_data = [
@@ -118,6 +124,26 @@ graphs_data = [
         'data': [
             {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 60 (SMA-7)']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['Menores de 60 (SMA-7)'].iloc[0]*100, 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i>' }, 'type': 'Scatter'},
             {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['60 o mas (SMA-7)']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['60 o mas (SMA-7)'].iloc[0]*100, 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i>' }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat' : '%d %B <br>%Y', 'legend': {'yanchor': 'top', 'y': 0.99, 'xanchor': 'left', 'x': 0.01}, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}},
+        'kwargs': {'initial_min': '2021-01-01'}
+    },
+    {
+        'name': 'fallecidos-edad-70',
+        'data': [
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 50'], 'name': 'Menores de 50', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'opacity': 0.4 }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['70 o más'], 'name': '70 o más', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'opacity': 0.4 }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 50 (SMA-7)'], 'name': 'Menores de 50 (Promedio 7 días)', 'kwargs': { 'hovertemplate':'<i>%{y}</i>','line': {'color': '#1f77b4', 'dash': 'dash'} }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['70 o más (SMA-7)'], 'name': '70 o más (Promedio 7 días)', 'kwargs': { 'hovertemplate':'<i>%{y}</i>', 'line': {'color': '#ff7f0e', 'dash': 'dash'} }, 'type': 'Scatter'}
+        ],
+        'layout': {'xaxis_tickformat': '%d %B <br>%Y', 'legend': {'yanchor': 'top', 'y': 0.99, 'xanchor': 'left', 'x': 0.01}, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}},
+        'kwargs': {'initial_min': '2021-01-01'}
+    },
+    {
+        'name': 'fallecidos-edad-70-base100',
+        'data': [
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['Menores de 50 (SMA-7)']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['Menores de 50 (SMA-7)'].iloc[0]*100, 'name': 'Menores de 60', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i>' }, 'type': 'Scatter'},
+            {'x': df_muertes_diarias.date, 'y': df_muertes_diarias['70 o más (SMA-7)']/df_muertes_diarias[df_muertes_diarias['date']=='2021-02-03']['70 o más (SMA-7)'].iloc[0]*100, 'name': '60 o más', 'kwargs': { 'hovertemplate':'<i>%{y:.1f}</i>' }, 'type': 'Scatter'}
         ],
         'layout': {'xaxis_tickformat' : '%d %B <br>%Y', 'legend': {'yanchor': 'top', 'y': 0.99, 'xanchor': 'left', 'x': 0.01}, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}},
         'kwargs': {'initial_min': '2021-01-01'}
