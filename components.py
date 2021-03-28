@@ -140,16 +140,7 @@ class ProgressGraph(GraphWithSlider):
                         **series['kwargs']
                     }), row=1, col=2) for series in self.data_json]
 
-            fig.update_layout(
-                barmode='overlay', 
-                showlegend=False,
-                xaxis=dict(
-                    range=[0,1]
-                ),
-                xaxis2=dict(
-                    range=[self.data_json[0]['x'].min(), self.data_json[0]['x'].max()]
-                )
-            )
+            fig.update_layout(**self.layout_kwargs)
 
             return [fig, dtparser.isoparse(str(selected_min)).strftime("%d %B, %Y"), dtparser.isoparse(str(selected_max)).strftime("%d %B, %Y")]
         return update_graph

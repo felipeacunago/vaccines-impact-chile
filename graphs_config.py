@@ -188,5 +188,6 @@ completion_graph_data ={
         {'x': df_vacunas_fix[df_vacunas_fix['Dosis']=='Primera'].date, 'y': df_vacunas_fix[df_vacunas_fix['Dosis']=='Primera']['>=70']/df_demo.iloc[14:][['M','F']].sum().sum(), 'name': '>=70 : 1 Dosis', 'kwargs': { 'marker': {'color': 'purple'}, 'opacity': 0.4}},
         {'x': df_vacunas_fix[df_vacunas_fix['Dosis']=='Segunda'].date, 'y': df_vacunas_fix[df_vacunas_fix['Dosis']=='Segunda']['>=70']/df_demo.iloc[14:][['M','F']].sum().sum(), 'name': '>=70 : 2 Dosis', 'kwargs': { 'marker': {'color': 'purple'}}},
     ],
-    'layout': {'xaxis_tickformat' : '%d %B <br>%Y', 'legend': {'yanchor': 'top', 'y': 0.99, 'xanchor': 'left', 'x': 0.01}, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}},
+    'layout': {'barmode':'overlay', 'showlegend':False, 'yaxis': {'showline': True}, 'xaxis': { 'range': [0,1],  'showline':True, 'linewidth':1, 'linecolor':'black'}, 'xaxis2': { 'showgrid': False, 'range': [df_uci_inner_join.date.min(),df_uci_inner_join.date.max()], 'showline':True, 'linewidth':1, 'linecolor':'black' }, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}},
+    # 'layout': {'barmode':'overlay', 'showlegend':False, 'yaxis': {'showline': True}, 'xaxis': { 'range': [0,1],  'showline':True, 'linewidth':1, 'linecolor':'black'}, 'xaxis2': { 'showgrid': False, 'range': [df_uci_inner_join.date.min(),df_uci_inner_join.date.max()], 'showline':True, 'linewidth':1, 'linecolor':'black' }, 'margin' : {'l': 50, 'r': 10, 't': 10, 'b': 50}, 'paper_bgcolor': 'white', "plot_bgcolor": "white"},
 }
