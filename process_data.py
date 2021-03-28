@@ -48,11 +48,22 @@ df_grouped = df_vacunas.groupby(['Dosis','datetime']).sum()
 
 over_60_cols = set(filter(lambda x: int(x)>=60, df_grouped.columns))
 under_60_cols = set(df_grouped.columns).difference(over_60_cols)
+over_70_cols = set(filter(lambda x: int(x)>=70, df_grouped.columns))
+_60s_cols = set(filter(lambda x: int(x)>=60 and int(x)<70, df_grouped.columns))
+_50s_cols = set(filter(lambda x: int(x)>=50 and int(x)<60, df_grouped.columns))
+_40s_cols = set(filter(lambda x: int(x)>=40 and int(x)<50, df_grouped.columns))
+under_40s_cols = set(filter(lambda x: int(x)<40 and int(x)<60, df_grouped.columns))
 
 df_grouped['60 o mas'] = df_grouped[over_60_cols].sum(axis=1)
 df_grouped['Menores de 60'] = df_grouped[under_60_cols].sum(axis=1)
 
-df_grouped = df_grouped[['60 o mas','Menores de 60']]
+df_grouped['>=70'] = df_grouped[over_70_cols].sum(axis=1)
+df_grouped['60-69'] = df_grouped[_60s_cols].sum(axis=1)
+df_grouped['50-59'] = df_grouped[_50s_cols].sum(axis=1)
+df_grouped['40-49'] = df_grouped[_40s_cols].sum(axis=1)
+df_grouped['<=39'] = df_grouped[under_40s_cols].sum(axis=1)
+
+df_grouped = df_grouped[['60 o mas','Menores de 60','>=70','60-69','50-59','40-49','<=39']] # hay dos divisiones >=60/<60 y >=70/60-69/50-59/40-49/<=39
 
 demo = pd.read_csv('local_postprocessed_data/Chile-2020.csv')
 

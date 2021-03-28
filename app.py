@@ -8,8 +8,8 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 
 
-from components import GraphWithSlider
-from graphs_config import graphs_data
+from components import GraphWithSlider, ProgressGraph
+from graphs_config import graphs_data, completion_graph_data
 
 
 # app initialize
@@ -46,6 +46,7 @@ def build_graph_title(title):
 
 graphs = { graph_data['name']: GraphWithSlider(preffix=graph_data['name'], data_json=graph_data['data'], layout_kwargs=graph_data['layout'], **graph_data.get('kwargs', {})) for graph_data in graphs_data}
 
+completion_graph = ProgressGraph(preffix='completados-segmentos', data_json=completion_graph_data['data'], progress_data=completion_graph_data['progress_data'], layout_kwargs=completion_graph_data['layout'], **completion_graph_data.get('kwargs', {}))
 
 app.layout = html.Div(
     children=[
@@ -70,6 +71,19 @@ app.layout = html.Div(
                         )
                     ],
                 ),
+            ],
+        ),
+        # row progress bar
+        html.Div(
+            className="graphs row",
+            children=[
+                html.Div(
+                    className="six columns",
+                    children=[
+                        build_graph_title("Vacunación por edad + Pacientes UCI (con respecto al máximo del período completo)"),
+                        completion_graph
+                    ],
+                )
             ],
         ),
         # row vacunacion
@@ -204,6 +218,12 @@ app.layout = html.Div(
     ],
 ) (graph.generate_callback()) for name, graph in graphs.items() ]
 
+app.callback(
+    [Output("completados-segmentos-graph", "figure"), Output("completados-segmentos-min-val", "children"), Output("completados-segmentos-max-val", "children")],
+    [
+        Input("completados-segmentos-slider", 'value'),
+    ],
+) (completion_graph.generate_callback())
 
 
 # Running the server
