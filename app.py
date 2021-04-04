@@ -80,7 +80,7 @@ app.layout = html.Div(
                 html.Div(
                     className="six columns",
                     children=[
-                        build_graph_title("Vacunación por edad + Pacientes UCI (con respecto al máximo del período completo)"),
+                        build_graph_title("Vacunación por edad + Pacientes UCI (con respecto al máximo del período post-vacunación de su tramo etario)"),
                         completion_graph
                     ],
                 )
