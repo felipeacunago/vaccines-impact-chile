@@ -1,3 +1,7 @@
+# Link a dashboard
+
+https://vaccines-dashboard.herokuapp.com/
+
 # Impacto de la vacuna en Chile
 
 Este dashboard recoge varias implementaciones de como medir el impacto de la vacuna, las ideas en general vienen de https://ourworldindata.org/vaccination-israel-impact y del estudio de La Tercera.
